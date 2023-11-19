@@ -50,6 +50,23 @@ namespace MovieWebApi.Repositories
             return Save();
         }
 
+        public bool DeleteRating(Rating rating)
+        {
+            // Keep in mind that rating is closely tied to the data in Movies.
+            // Deleting one rating might result in the deletion of more than one data in Movies.
+
+            // List all movies that use this rating as the FK.
+            var affectedMovies = GetMoviesByRating(rating.Id);
+
+            foreach (var movie in affectedMovies)
+            {
+                _context.Movies.Remove(movie);
+            }
+
+            _context.Ratings.Remove(rating);
+            return Save();
+        }
+
         public bool Save()
         {
             var changesSaved = _context.SaveChanges();

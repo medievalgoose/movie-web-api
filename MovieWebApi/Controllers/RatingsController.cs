@@ -146,5 +146,28 @@ namespace MovieWebApi.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{ratingId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteRating(int ratingId)
+        {
+            if (!_ratingRepo.RatingExists(ratingId))
+                return NotFound();
+
+            var deleteRating = _ratingRepo.GetRating(ratingId);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if (!_ratingRepo.DeleteRating(deleteRating))
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
     }
 }

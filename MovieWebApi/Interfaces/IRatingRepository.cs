@@ -18,6 +18,8 @@ namespace MovieWebApi.Interfaces
 
         bool UpdateRating(Rating rating);
 
+        bool DeleteRating(Rating rating);
+
         bool Save();
     }
 }
