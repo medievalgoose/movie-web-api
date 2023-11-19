@@ -44,5 +44,34 @@ namespace MovieWebApi.Repositories
             // Returns a list of movies that have the specified Rating ID.
             return _context.Ratings.Where(r => r.Id == ratingId).SelectMany(r => r.Movies).ToList();
         }
+
+        public bool CreateMovie(Movie movie)
+        {
+            /*
+            var ratingObject = _context.Ratings.Where(r => r.Id == ratingId).FirstOrDefault();
+            
+            var newMovieEntity = new Movie();
+            newMovieEntity.Name = name;
+            newMovieEntity.Duration = duration;
+            newMovieEntity.RatingId = ratingId;
+            newMovieEntity.Rating = ratingObject;
+            */
+
+            var ratingFKValid = _context.Ratings.Any(r => r.Id == movie.RatingId);
+            
+            if (!ratingFKValid)
+                return false;
+
+            _context.Movies.Add(movie);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var changeSaved = _context.SaveChanges();
+
+            // If the change is successfully saved, return true. Otherwise, return false.
+            return changeSaved > 0 ? true : false;
+        }
     }
 }

@@ -90,5 +90,45 @@ namespace MovieWebApi.Controllers
 
             return Ok(movies);
         }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        public IActionResult CreateMovie([FromBody] MovieDTO newMovie)
+        {
+            // If the newMovie object is null, then return the BadRequest response.
+            if (newMovie == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Check if the movie already exist.
+            var checkSameMovie = _moviesRepo.GetMovies().Where(m => m.Name.Trim().ToUpper() == newMovie.Name.Trim().ToUpper()).FirstOrDefault();
+
+            // If the movie already exist, then return the statuscode 422 with the error message.
+            if (checkSameMovie != null)
+            {
+                ModelState.AddModelError("", "Movie already exist");
+                return StatusCode(422, ModelState);
+            }
+
+            // If the modelstate is invalid, then return the badrequest response.
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Map the MovieDTO object into Movie.
+            var movieMap = _mapper.Map<Movie>(newMovie);
+
+            // If the CreateMovie method returns false, then return StatusCode 500.
+            if (!_moviesRepo.CreateMovie(movieMap))
+            {
+                ModelState.AddModelError("", "Something went wrong.");
+                return StatusCode(500, ModelState);
+            }
+
+            // If everything went smoothly, then return the Ok message.
+            return Ok("New movie added to the list");
+        }
     }
 }

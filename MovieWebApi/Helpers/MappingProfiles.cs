@@ -8,8 +8,8 @@ namespace MovieWebApi.Helpers
     {
         public MappingProfiles()
         {
-            CreateMap<Movie, MovieDTO>();
-            CreateMap<Rating, RatingDTO>();
+            CreateMap<Movie, MovieDTO>().ReverseMap();
+            CreateMap<Rating, RatingDTO>().ReverseMap();
         }
     }
 }

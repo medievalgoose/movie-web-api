@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using AutoMapper.Configuration.Conventions;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MovieWebApi.Models;
 
 namespace MovieWebApi.Interfaces
@@ -14,5 +15,9 @@ namespace MovieWebApi.Interfaces
         Movie GetMovieByName(string movieName);
 
         bool MovieExists(int id);
+
+        bool CreateMovie(Movie movie);
+
+        bool Save();
     }
 }
