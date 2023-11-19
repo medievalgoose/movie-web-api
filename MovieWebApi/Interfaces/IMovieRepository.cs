@@ -20,6 +20,8 @@ namespace MovieWebApi.Interfaces
 
         bool UpdateMovie(Movie movie);
 
+        bool DeleteMovie(Movie movie);
+
         bool Save();
     }
 }

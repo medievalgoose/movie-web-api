@@ -159,5 +159,28 @@ namespace MovieWebApi.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{movieId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteMovie(int movieId)
+        {
+            if (!_moviesRepo.MovieExists(movieId))
+                return NotFound();
+
+            var deleteMovie = _moviesRepo.GetMovie(movieId);
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (!_moviesRepo.DeleteMovie(deleteMovie))
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return BadRequest(ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

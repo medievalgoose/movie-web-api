@@ -67,6 +67,12 @@ namespace MovieWebApi.Repositories
             return Save();
         }
 
+        public bool DeleteMovie(Movie movie)
+        {
+            _context.Movies.Remove(movie);
+            return Save();
+        }
+
         public bool Save()
         {
             var changeSaved = _context.SaveChanges();
