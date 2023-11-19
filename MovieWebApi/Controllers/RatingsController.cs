@@ -86,5 +86,38 @@ namespace MovieWebApi.Controllers
 
             return Ok(listMovies);
         }
+
+        [HttpPost]
+        public IActionResult CreateRating([FromBody] RatingDTO newRating)
+        {
+            if (newRating == null)
+                return BadRequest();
+
+            // Check if there's a same Rating in the database.
+            var sameRating = _ratingRepo.GetRatings()
+                .Where(r => r.RatingName.Trim().ToUpper() == newRating.RatingName.Trim().ToUpper())
+                .FirstOrDefault();
+
+            if (sameRating != null)
+            {
+                ModelState.AddModelError("", "Rating already exists.");
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var ratingMap = _mapper.Map<Rating>(newRating);
+
+            if (!_ratingRepo.CreateRating(ratingMap))
+            {
+                ModelState.AddModelError("", "Something went wrong.");
+                return BadRequest();
+            }
+
+            return Ok("Data successfully added to the database.");
+        }
     }
 }

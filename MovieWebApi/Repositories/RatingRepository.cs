@@ -37,5 +37,17 @@ namespace MovieWebApi.Repositories
         {
             return _context.Ratings.Where(r => r.Id == ratingId).SelectMany(r => r.Movies).ToList();
         }
+
+        public bool CreateRating(Rating rating)
+        {
+            _context.Ratings.Add(rating);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var changesSaved = _context.SaveChanges();
+            return changesSaved > 0 ? true : false;
+        }
     }
 }

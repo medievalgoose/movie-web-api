@@ -13,5 +13,9 @@ namespace MovieWebApi.Interfaces
         ICollection<Movie> GetMoviesByRating(int ratingId);
 
         bool RatingExists(int id);
+
+        bool CreateRating(Rating rating);
+
+        bool Save();
     }
 }
