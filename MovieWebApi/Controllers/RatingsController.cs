@@ -119,5 +119,32 @@ namespace MovieWebApi.Controllers
 
             return Ok("Data successfully added to the database.");
         }
+
+        [HttpPut("{ratingId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateRating(int ratingId, [FromBody] RatingDTO updateRating)
+        {
+            if (updateRating == null)
+                return BadRequest();
+
+            if (ratingId != updateRating.Id)
+                return BadRequest();
+
+            if (!_ratingRepo.RatingExists(ratingId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var ratingMap = _mapper.Map<Rating>(updateRating);
+
+            if (!_ratingRepo.UpdateRating(ratingMap))
+                return BadRequest();
+
+            return NoContent();
+        }
+
     }
 }

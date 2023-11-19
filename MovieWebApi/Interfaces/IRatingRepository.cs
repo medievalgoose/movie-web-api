@@ -16,6 +16,8 @@ namespace MovieWebApi.Interfaces
 
         bool CreateRating(Rating rating);
 
+        bool UpdateRating(Rating rating);
+
         bool Save();
     }
 }

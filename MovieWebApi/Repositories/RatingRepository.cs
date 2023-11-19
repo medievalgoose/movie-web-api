@@ -44,6 +44,12 @@ namespace MovieWebApi.Repositories
             return Save();
         }
 
+        public bool UpdateRating(Rating rating)
+        {
+            _context.Ratings.Update(rating);
+            return Save();
+        }
+
         public bool Save()
         {
             var changesSaved = _context.SaveChanges();

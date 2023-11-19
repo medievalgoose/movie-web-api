@@ -18,6 +18,8 @@ namespace MovieWebApi.Interfaces
 
         bool CreateMovie(Movie movie);
 
+        bool UpdateMovie(Movie movie);
+
         bool Save();
     }
 }

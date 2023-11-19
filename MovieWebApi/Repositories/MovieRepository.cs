@@ -47,22 +47,23 @@ namespace MovieWebApi.Repositories
 
         public bool CreateMovie(Movie movie)
         {
-            /*
-            var ratingObject = _context.Ratings.Where(r => r.Id == ratingId).FirstOrDefault();
-            
-            var newMovieEntity = new Movie();
-            newMovieEntity.Name = name;
-            newMovieEntity.Duration = duration;
-            newMovieEntity.RatingId = ratingId;
-            newMovieEntity.Rating = ratingObject;
-            */
-
             var ratingFKValid = _context.Ratings.Any(r => r.Id == movie.RatingId);
             
             if (!ratingFKValid)
                 return false;
 
             _context.Movies.Add(movie);
+            return Save();
+        }
+
+        public bool UpdateMovie(Movie movie)
+        {
+            var validRatingFK = _context.Ratings.Any(r => r.Id == movie.RatingId);
+
+            if (!validRatingFK)
+                return false;
+
+            _context.Movies.Update(movie);
             return Save();
         }
 

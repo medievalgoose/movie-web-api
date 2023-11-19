@@ -36,7 +36,7 @@ namespace MovieWebApi.Controllers
             if (!String.IsNullOrEmpty(movieName))
             {
                 var movie = _mapper.Map<MovieDTO>(_moviesRepo.GetMovieByName(movieName));
-                
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest();
@@ -129,6 +129,35 @@ namespace MovieWebApi.Controllers
 
             // If everything went smoothly, then return the Ok message.
             return Ok("New movie added to the list");
+        }
+
+        [HttpPut("{movieId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateMovie(int movieId, [FromBody] MovieDTO updateMovie)
+        {
+            if (updateMovie == null)
+                return BadRequest(ModelState);
+
+            if (movieId != updateMovie.Id)
+                return BadRequest(ModelState);
+
+            if (!_moviesRepo.MovieExists(movieId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var movieMap = _mapper.Map<Movie>(updateMovie);
+
+            if (!_moviesRepo.UpdateMovie(movieMap))
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }
