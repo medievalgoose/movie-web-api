@@ -10,6 +10,6 @@
 
         public int RatingId { get; set; }
 
-        public RatingDTO Rating { get; set; }
+        public RatingDTO? Rating { get; set; }
     }
 }

@@ -79,6 +79,7 @@ namespace MovieWebApi.Controllers
             }
 
             var movie = _mapper.Map<MovieDTO>(_moviesRepo.GetMovie(movieId));
+            movie.Rating = _mapper.Map<RatingDTO>(_ratingRepo.GetRating(movie.RatingId));
 
             if (!ModelState.IsValid)
             {
