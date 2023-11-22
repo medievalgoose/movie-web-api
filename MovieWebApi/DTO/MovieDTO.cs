@@ -9,5 +9,7 @@
         public int Duration { get; set; }
 
         public int RatingId { get; set; }
+
+        public RatingDTO Rating { get; set; }
     }
 }

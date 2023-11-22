@@ -12,12 +12,14 @@ namespace MovieWebApi.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMovieRepository _moviesRepo;
+        private readonly IRatingRepository _ratingRepo;
         private readonly IMapper _mapper;
 
-        public MoviesController(IMovieRepository moviesRepo, IMapper mapper)
+        public MoviesController(IMovieRepository moviesRepo, IMapper mapper, IRatingRepository ratingRepo)
         {
             _moviesRepo = moviesRepo;
             _mapper = mapper;
+            _ratingRepo = ratingRepo;
         }
 
         [HttpGet]
@@ -42,6 +44,10 @@ namespace MovieWebApi.Controllers
                     return BadRequest();
                 }
 
+                var ratingDto = _mapper.Map<RatingDTO>(_ratingRepo.GetRating(movie.RatingId));
+
+                movie.Rating = ratingDto;
+
                 return Ok(movie);
             }
             else
@@ -51,6 +57,11 @@ namespace MovieWebApi.Controllers
                 if (!ModelState.IsValid)
                 {
                     return BadRequest();
+                }
+
+                for (int i = 0; i < movies.Count; i++)
+                {
+                    movies[i].Rating = _mapper.Map<RatingDTO>(_ratingRepo.GetRating(movies[i].RatingId));
                 }
 
                 return Ok(movies);
