@@ -14,21 +14,28 @@ namespace MovieWebApi.Controllers
     {
         // Dependency injection
         private readonly IRatingRepository _ratingRepo;
+        private readonly IAccountRepository _accountRepo;
         private readonly IMapper _mapper;
 
-        public RatingsController(IRatingRepository ratingRepo, IMapper mapper)
+        public RatingsController(IRatingRepository ratingRepo, IMapper mapper, IAccountRepository accountRepo)
         {
             _ratingRepo = ratingRepo;
             _mapper = mapper;
+            _accountRepo = accountRepo;
         }
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Rating>))]
-        public IActionResult GetRatings(string? ratingName)
+        public IActionResult GetRatings([FromHeader] string ApiKey, string? ratingName)
         {
             // Endpoint:
             // GET: api/Movies
             // GET: api/Movies?ratingName
+
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
 
             if (!String.IsNullOrEmpty(ratingName))
             {
@@ -57,8 +64,11 @@ namespace MovieWebApi.Controllers
 
         [HttpGet("{ratingId}")]
         [ProducesResponseType(200, Type = typeof(Rating))]
-        public IActionResult GetRating(int ratingId)
+        public IActionResult GetRating([FromHeader] string ApiKey, int ratingId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+                return StatusCode(401);
+
             if (!_ratingRepo.RatingExists(ratingId))
                 return NotFound();
 
@@ -72,8 +82,11 @@ namespace MovieWebApi.Controllers
 
         [HttpGet("{ratingId}/movies")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Movie>))]
-        public IActionResult GetMoviesByRating(int ratingId)
+        public IActionResult GetMoviesByRating([FromHeader] string ApiKey, int ratingId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+                return StatusCode(401);
+
             var listMovies = _mapper.Map<List<MovieDTO>>(_ratingRepo.GetMoviesByRating(ratingId));
 
             if (listMovies.IsNullOrEmpty())
@@ -88,8 +101,11 @@ namespace MovieWebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateRating([FromBody] RatingDTO newRating)
+        public IActionResult CreateRating([FromHeader] string ApiKey, [FromBody] RatingDTO newRating)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+                return StatusCode(401);
+
             if (newRating == null)
                 return BadRequest();
 
@@ -124,8 +140,11 @@ namespace MovieWebApi.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateRating(int ratingId, [FromBody] RatingDTO updateRating)
+        public IActionResult UpdateRating([FromHeader] string ApiKey, int ratingId, [FromBody] RatingDTO updateRating)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+                return StatusCode(401);
+
             if (updateRating == null)
                 return BadRequest();
 
@@ -150,8 +169,11 @@ namespace MovieWebApi.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteRating(int ratingId)
+        public IActionResult DeleteRating([FromHeader] string ApiKey, int ratingId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+                return StatusCode(401);
+
             if (!_ratingRepo.RatingExists(ratingId))
                 return NotFound();
 
