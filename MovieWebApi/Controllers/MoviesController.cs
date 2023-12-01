@@ -13,18 +13,20 @@ namespace MovieWebApi.Controllers
     {
         private readonly IMovieRepository _moviesRepo;
         private readonly IRatingRepository _ratingRepo;
+        private readonly IAccountRepository _accountRepo;
         private readonly IMapper _mapper;
 
-        public MoviesController(IMovieRepository moviesRepo, IMapper mapper, IRatingRepository ratingRepo)
+        public MoviesController(IMovieRepository moviesRepo, IMapper mapper, IRatingRepository ratingRepo, IAccountRepository accountRepo)
         {
             _moviesRepo = moviesRepo;
             _mapper = mapper;
             _ratingRepo = ratingRepo;
+            _accountRepo = accountRepo;
         }
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Movie>))]
-        public IActionResult GetMovies(string? movieName)
+        public IActionResult GetMovies([FromHeader] string ApiKey, string? movieName)
         {
 
             // This endpoint has an optional parameter called movieName.
@@ -34,6 +36,11 @@ namespace MovieWebApi.Controllers
             // E.g.:
             // GET: api/Movies -> returns a list.
             // GET: api/Movies?movieName=abc -> returns individual movie entity that contains "abc" in the title.
+
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
 
             if (!String.IsNullOrEmpty(movieName))
             {
@@ -70,8 +77,13 @@ namespace MovieWebApi.Controllers
 
         [HttpGet("{movieId}")]
         [ProducesResponseType(200, Type = typeof(Movie))]
-        public IActionResult GetMovie(int movieId)
+        public IActionResult GetMovie([FromHeader] string ApiKey, int movieId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
+
             // If the movie doesn't exist, return the NotFound validation.
             if (!_moviesRepo.MovieExists(movieId))
             {
@@ -91,8 +103,13 @@ namespace MovieWebApi.Controllers
 
         [HttpGet("ByRating/{ratingId}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Movie>))]
-        public IActionResult GetMovieByRating(int ratingId)
+        public IActionResult GetMovieByRating([FromHeader] string ApiKey, int ratingId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
+
             var movies = _mapper.Map<List<MovieDTO>>(_moviesRepo.GetMoviesByRating(ratingId));
 
             if (!ModelState.IsValid)
@@ -105,8 +122,13 @@ namespace MovieWebApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(200)]
-        public IActionResult CreateMovie([FromBody] MovieDTO newMovie)
+        public IActionResult CreateMovie([FromHeader] string ApiKey, [FromBody] MovieDTO newMovie)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
+
             // If the newMovie object is null, then return the BadRequest response.
             if (newMovie == null)
             {
@@ -147,8 +169,13 @@ namespace MovieWebApi.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateMovie(int movieId, [FromBody] MovieDTO updateMovie)
+        public IActionResult UpdateMovie([FromHeader] string ApiKey, int movieId, [FromBody] MovieDTO updateMovie)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
+
             if (updateMovie == null)
                 return BadRequest(ModelState);
 
@@ -176,8 +203,13 @@ namespace MovieWebApi.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteMovie(int movieId)
+        public IActionResult DeleteMovie([FromHeader] string ApiKey, int movieId)
         {
+            if (!_accountRepo.ApiKeyVerified(ApiKey))
+            {
+                return StatusCode(401);
+            }
+
             if (!_moviesRepo.MovieExists(movieId))
                 return NotFound();
 

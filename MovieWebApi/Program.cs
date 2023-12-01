@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 // Dependency injection for repository pattern.
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 // Auto mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
